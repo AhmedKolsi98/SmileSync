@@ -1,0 +1,242 @@
+/* ═════════════════════════════════════════════
+   FEATURE-SPECIFIC STYLES
+   ═════════════════════════════════════════════ */
+
+/* FILES */
+.file-g {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 9px;
+}
+
+.file-c {
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  padding: 11px 9px;
+  cursor: pointer;
+  transition: var(--tr);
+  text-align: center;
+}
+
+.file-c:hover {
+  border-color: var(--bd2);
+  background: var(--s3);
+}
+
+.upz {
+  border: 2px dashed var(--bd);
+  border-radius: 11px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--tr);
+  color: var(--text3);
+}
+
+.upz:hover, .upz.drag {
+  border-color: var(--acc);
+  color: var(--acc);
+  background: var(--acc-d);
+}
+
+/* CAISSE */
+.tx-r {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--bd);
+}
+
+.tx-r:last-child {
+  border-bottom: none;
+}
+
+.tx-amt {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ORDONNANCES */
+.ord-c {
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: 11px;
+  padding: 14px;
+  cursor: pointer;
+  transition: var(--tr);
+}
+
+.ord-c:hover {
+  border-color: var(--bd2);
+  transform: translateY(-1px);
+}
+
+.drg {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1fr auto;
+  gap: 7px;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 7px;
+  margin-bottom: 6px;
+}
+
+.med-ps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-bottom: 11px;
+}
+
+.med-p {
+  padding: 7px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: var(--tr);
+  font-size: 10px;
+}
+
+.med-p:hover {
+  border-color: var(--acc);
+  background: var(--acc-d);
+}
+
+/* TIMELINE */
+.tl-i {
+  display: flex;
+  gap: 11px;
+  padding-bottom: 12px;
+  position: relative;
+}
+
+.tl-i::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 24px;
+  bottom: 0;
+  width: 1px;
+  background: var(--bd);
+}
+
+.tl-i:last-child::before {
+  display: none;
+}
+
+.tl-d {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--bd);
+  background: var(--s2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.tl-b {
+  flex: 1;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 7px;
+  padding: 9px;
+}
+
+/* NOTIF PANEL */
+.np {
+  position: fixed;
+  top: 54px;
+  right: 0;
+  width: 300px;
+  background: var(--s1);
+  border-left: 1px solid var(--bd);
+  height: calc(100vh - 54px);
+  overflow-y: auto;
+  z-index: 500;
+  transform: translateX(100%);
+  transition: transform .3s;
+  padding: 13px;
+}
+
+.np.open {
+  transform: none;
+}
+
+/* SEARCH BAR */
+.sbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  transition: var(--tr);
+}
+
+.sbar:focus-within {
+  border-color: var(--acc);
+}
+
+.sbar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  flex: 1;
+  color: var(--text);
+}
+
+.sbar input::placeholder {
+  color: var(--text3);
+}
+
+.chip {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  border: 1px solid var(--bd);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: var(--tr);
+}
+
+.chip:hover, .chip.act {
+  border-color: var(--acc);
+  color: var(--acc);
+  background: var(--acc-d);
+}
+
+/* ALERT STRIP */
+.alert-strip {
+  padding: 8px 14px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.alert-strip.dng {
+  background: rgba(255, 77, 109, .1);
+  border: 1px solid rgba(255, 77, 109, .25);
+  color: var(--dng);
+}
+
+.alert-strip.wa {
+  background: rgba(255, 184, 48, .1);
+  border: 1px solid rgba(255, 184, 48, .25);
+  color: var(--wa);
+}

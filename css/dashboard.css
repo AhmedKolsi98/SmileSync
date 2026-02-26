@@ -1,0 +1,83 @@
+
+    /* ═══════════════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════════════ */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 16px;
+    }
+
+    .agenda-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .agenda-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--s2);
+      border-radius: var(--r2);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .agenda-item:hover {
+      border-color: var(--border2);
+      background: var(--s3);
+    }
+
+    .agenda-time {
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 500;
+      min-width: 44px;
+    }
+
+    .agenda-info {
+      flex: 1;
+    }
+
+    .agenda-patient {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .agenda-type {
+      font-size: 10px;
+      color: var(--text2);
+      margin-top: 1px;
+    }
+
+    .agenda-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .alert-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .alert-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border-radius: var(--r2);
+      border: 1px solid var(--border);
+    }
+
+    .alert-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }

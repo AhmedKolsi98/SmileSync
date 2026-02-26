@@ -1,0 +1,141 @@
+/* ═══════════════════════════════════════════════════════
+   RESET & ROOT
+═══════════════════════════════════════════════════════ */
+    :root {
+      --bg: #0b0d12;
+      --s1: #111318;
+      --s2: #161a23;
+      --s3: #1c2030;
+      --border: #22273a;
+      --border2: #2d3448;
+      --accent: #3dffa0;
+      --accent-dim: rgba(61, 255, 160, 0.12);
+      --cyan: #00e5ff;
+      --cyan-dim: rgba(0, 229, 255, 0.1);
+      --text: #dde3f0;
+      --text2: #9aa3be;
+      --text3: #545c7a;
+      --danger: #ff4d6d;
+      --warn: #ffb830;
+      --info: #4d9fff;
+      --purple: #9f7aea;
+      --pink: #f472b6;
+      --tooth-healthy: #3dffa0;
+      --tooth-caries: #ff4d6d;
+      --tooth-treated: #4d9fff;
+      --tooth-extracted: #3a3f58;
+      --tooth-devital: #9f7aea;
+      --tooth-crown: #00e5ff;
+      --tooth-implant: #ffb830;
+      --tooth-bridge: #f472b6;
+      --tooth-sealed: #b0ff4f;
+      --tooth-absent: #22273a;
+      --r1: 8px;
+      --r2: 12px;
+      --r3: 16px;
+      --r4: 20px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Light mode */
+    [data-theme="light"] {
+      --bg: #f5f7fa;
+      --s1: #ffffff;
+      --s2: #eef1f6;
+      --s3: #e2e7ee;
+      --border: #d1d9e6;
+      --border2: #c5cfdc;
+      --accent: #00c853;
+      --accent-dim: rgba(0, 200, 83, 0.12);
+      --cyan: #00b8d4;
+      --cyan-dim: rgba(0, 184, 212, 0.1);
+      --text: #1a1f2e;
+      --text2: #4a5568;
+      --text3: #8896ab;
+      --danger: #e91e63;
+      --warn: #f9a825;
+      --info: #1976d2;
+      --purple: #7c3aed;
+      --pink: #ec407a;
+      --tooth-healthy: #00c853;
+      --tooth-caries: #e91e63;
+      --tooth-treated: #1976d2;
+      --tooth-extracted: #9e9e9e;
+      --tooth-devital: #7c3aed;
+      --tooth-crown: #00b8d4;
+      --tooth-implant: #f9a825;
+      --tooth-bridge: #ec407a;
+      --tooth-sealed: #7cb342;
+      --tooth-absent: #c5cfdc;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: .025;
+      pointer-events: none;
+      z-index: 9998;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 2px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text3);
+    }

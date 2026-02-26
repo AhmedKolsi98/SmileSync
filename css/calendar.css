@@ -1,0 +1,267 @@
+
+    /* ═══════════════════════════════════════════════════════
+   CALENDAR
+═══════════════════════════════════════════════════════ */
+    .cal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .cal-nav {
+      display: flex;
+      gap: 4px;
+    }
+
+    .cal-month-label {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      flex: 1;
+      text-align: center;
+    }
+
+    .cal-view-toggle {
+      display: flex;
+      gap: 4px;
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: var(--r1);
+      padding: 3px;
+    }
+
+    .cal-view-btn {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      border: none;
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .cal-view-btn.active {
+      background: var(--s3);
+      color: var(--text);
+    }
+
+    .cal-monthly {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .cal-days-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      margin-bottom: 4px;
+    }
+
+    .cal-day-name {
+      text-align: center;
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 6px 0;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .cal-cell {
+      min-height: 80px;
+      background: var(--s2);
+      border-radius: var(--r1);
+      padding: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .cal-cell:hover {
+      background: var(--s3);
+      border-color: var(--border);
+    }
+
+    .cal-cell.today {
+      border-color: var(--accent) !important;
+      background: var(--accent-dim) !important;
+    }
+
+    .cal-cell.other-month .cal-date {
+      color: var(--text3);
+    }
+
+    .cal-cell.other-month {
+      opacity: .5;
+    }
+
+    .cal-date {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .cal-cell.today .cal-date {
+      color: var(--accent);
+    }
+
+    .cal-event {
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+    }
+
+    .cal-weekly {
+      display: grid;
+      gap: 0;
+    }
+
+    .week-header {
+      display: grid;
+      grid-template-columns: 60px repeat(7, 1fr);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .week-day-label {
+      text-align: center;
+      padding: 8px 4px;
+      font-size: 11px;
+      border-left: 1px solid var(--border);
+    }
+
+    .week-day-label.today-col .wdl-num {
+      color: var(--accent);
+    }
+
+    .wdl-name {
+      font-size: 9px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .wdl-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .week-body {
+      display: grid;
+      grid-template-columns: 60px repeat(7, 1fr);
+      overflow-y: auto;
+      max-height: 500px;
+    }
+
+    .week-time-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .week-time-slot {
+      height: 48px;
+      display: flex;
+      align-items: flex-start;
+      padding-top: 2px;
+      padding-right: 8px;
+      font-size: 9px;
+      color: var(--text3);
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .week-day-col {
+      border-left: 1px solid var(--border);
+      position: relative;
+      min-height: 480px;
+    }
+
+    .week-day-col.today-col {
+      background: rgba(61, 255, 160, 0.02);
+    }
+
+    .week-slot {
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .week-slot:hover {
+      background: var(--accent-dim);
+    }
+
+    .week-appt {
+      position: absolute;
+      left: 3px;
+      right: 3px;
+      border-radius: 5px;
+      padding: 3px 6px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      overflow: hidden;
+      border-left: 3px solid transparent;
+    }
+
+    .week-appt:hover {
+      filter: brightness(1.1);
+    }
+
+    /* Appointment types colors */
+    .type-checkup {
+      background: rgba(61, 255, 160, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .type-caries {
+      background: rgba(255, 77, 109, 0.12);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .type-detartrage {
+      background: rgba(0, 229, 255, 0.12);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .type-extraction {
+      background: rgba(255, 184, 48, 0.12);
+      border-color: var(--warn);
+      color: var(--warn);
+    }
+
+    .type-implant {
+      background: rgba(77, 159, 255, 0.12);
+      border-color: var(--info);
+      color: var(--info);
+    }
+
+    .type-orthodontie {
+      background: rgba(159, 122, 234, 0.12);
+      border-color: var(--purple);
+      color: var(--purple);
+    }
+
+    .type-prothese {
+      background: rgba(244, 114, 182, 0.12);
+      border-color: var(--pink);
+      color: var(--pink);
+    }

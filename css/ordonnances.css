@@ -1,0 +1,120 @@
+
+    /* ═══════════════════════════════════════════════════════
+   ORDONNANCES
+═══════════════════════════════════════════════════════ */
+    .ordonnance-card {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .ordonnance-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-1px);
+    }
+
+    .ord-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .ord-patient {
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+      color: var(--text);
+    }
+
+    .ord-date {
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .ord-meds {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .ord-med {
+      font-size: 11px;
+      color: var(--text2);
+    }
+
+    .ord-med strong {
+      color: var(--text);
+    }
+
+    .ord-footer {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Print prescription */
+    .print-preview {
+      background: #fff;
+      color: #1a1a2e;
+      padding: 40px;
+      border-radius: var(--r2);
+      font-family: 'DM Mono', monospace;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .print-preview h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+
+    .print-meds {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .print-meds li {
+      padding: 10px 0;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 13px;
+    }
+
+    .print-meds li:last-child {
+      border-bottom: none;
+    }
+
+    /* Drug row in form */
+    .drug-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      background: var(--s2);
+      border: 1px solid var(--border);
+      border-radius: var(--r1);
+      padding: 10px 12px;
+    }
+
+    .drug-remove {
+      background: transparent;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px;
+      transition: var(--transition);
+    }
+
+    .drug-remove:hover {
+      color: var(--danger);
+    }

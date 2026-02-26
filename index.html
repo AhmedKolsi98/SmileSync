@@ -95,13 +95,11 @@
         </button>
       </div>
       <button class="sb-toggle" onclick="toggleSidebar()">◂</button>
-      <button class="theme-toggle" onclick="toggleTheme()" title="Changer le thème">
-        <span class="icon" id="theme-icon">☀</span>
       </button>
       <div class="sb-user">
         <div class="sb-avatar avatar" id="sb-avatar" style="background:var(--accent);color:#0b0d12;">D</div>
         <div class="sb-user-info">
-          <div class="sb-user-name" id="sb-user-name">Dr. Benali</div>
+          <div class="sb-user-name" id="sb-user-name">Dr. Ben Abdallah Rebai</div>
           <div class="sb-user-role" id="sb-user-role">Dentiste</div>
         </div>
       </div>
@@ -116,6 +114,8 @@
             <span class="ts-icon">⌕</span>
             <input placeholder="Rechercher un patient..." id="global-search" oninput="globalSearch(this.value)">
           </div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Changer le thème">
+        <span class="icon" id="theme-icon">☀</span>
           <button class="tb-btn" onclick="toggleNotif()" title="Notifications">
             🔔
             <div class="tb-notif-dot"></div>
@@ -191,7 +191,7 @@
     // ══════════════════════════════════════════════════════════
     const APP = {
       role: 'dentiste',
-      user: 'Dr. Benali',
+      user: 'Dr. Ben Abdallah Rebai',
       today: new Date(2025, 5, 18), // June 18 2025
       currentPage: 'dashboard',
       calView: 'monthly',

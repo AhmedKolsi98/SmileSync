@@ -1,8 +1,10 @@
-// ══════════════════════════════════════════════════════════
-// AGENDA
-// ══════════════════════════════════════════════════════════
-import { APPOINTMENTS, PATIENTS, TYPE_LABELS, TYPE_CLASSES, STATUS_LABELS_RDV, STATUS_COLORS_RDV } from './data.js';    
-function renderAgenda() {
+// Agenda Module
+import { APP, TYPE_LABELS, TYPE_CLASSES, STATUS_LABELS_RDV, STATUS_COLORS_RDV } from './config.js';
+import { APPOINTMENTS } from './data.js';
+import { $, el, getPatient, getPatientName, formatDate, todayStr, avatarColor, initials, toast, closeModal } from './utils.js';
+import { renderDashboard } from './dashboard.js';
+
+export function renderAgenda() {
   const container = $('page-agenda');
   container.innerHTML = '';
 
@@ -18,7 +20,6 @@ function renderAgenda() {
   container.appendChild(hdr);
 
   const calCard = el('div', 'card');
-  // Nav
   const nav = el('div', 'cal-header');
   const mn = el('div', 'cal-nav');
   const prevBtn = el('button', 'btn btn-outline btn-sm'); prevBtn.textContent = '←'; prevBtn.onclick = () => { calNavigate(-1); };
@@ -33,19 +34,18 @@ function renderAgenda() {
   calCard.appendChild(calBody);
   container.appendChild(calCard);
 
-  // Upcoming appointments
   const upCard = el('div', 'card');
   upCard.innerHTML = `<div class="card-title"><div class="card-title-dot"></div>Prochains rendez-vous</div>`;
   const upcoming = APPOINTMENTS.filter(a => a.date >= todayStr() && a.status !== 'cancelled').sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)).slice(0, 10);
   const tbl = el('div', 'table-wrap');
   tbl.innerHTML = `<table><thead><tr><th>Date & Heure</th><th>Patient</th><th>Type</th><th>Durée</th><th>Statut</th><th>Actions</th></tr></thead><tbody>
-  ${upcoming.map(a => `<tr onclick="openAppointmentModal(${JSON.stringify(a).replace(/"/g, '"')})">
+  ${upcoming.map(a => `<tr onclick="openAppointmentModal(${JSON.stringify(a).replace(/"/g, '&quot;')})">
     <td>${formatDate(a.date)} <strong>${a.time}</strong></td>
     <td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar avatar-sm" style="background:${avatarColor(getPatient(a.patientId)?.nom || '')};">${initials(getPatient(a.patientId) || { prenom: '?', nom: '?' })}</div>${getPatientName(a.patientId)}</div></td>
     <td><span class="badge ${TYPE_CLASSES[a.type]}">${TYPE_LABELS[a.type]}</span></td>
     <td>${a.duration}min</td>
     <td><span class="badge ${STATUS_COLORS_RDV[a.status]}">${STATUS_LABELS_RDV[a.status]}</span></td>
-    <td><button class="btn btn-icon" onclick="event.stopPropagation();openAppointmentModal(${JSON.stringify(a).replace(/"/g, '"')})">✎</button></td>
+    <td><button class="btn btn-icon" onclick="event.stopPropagation();openAppointmentModal(${JSON.stringify(a).replace(/"/g, '&quot;')})">✎</button></td>
   </tr>`).join('')}
   </tbody></table>`;
   upCard.appendChild(tbl);
@@ -54,14 +54,15 @@ function renderAgenda() {
   renderCalBody(calBody);
 }
 
-function setCalView(v, btn) {
+export function setCalView(v, btn) {
   APP.calView = v;
   btn.closest('.cal-view-toggle').querySelectorAll('.cal-view-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const calBody = $('page-agenda').querySelector('.cal-header+div');
   if (calBody) renderCalBody(calBody);
 }
-function calNavigate(dir) {
+
+export function calNavigate(dir) {
   if (APP.calView === 'monthly') { APP.calDate.setMonth(APP.calDate.getMonth() + dir); }
   else { APP.calDate.setDate(APP.calDate.getDate() + dir * 7); }
   const calBody = $('page-agenda').querySelector('.cal-header+div');
@@ -71,7 +72,6 @@ function calNavigate(dir) {
 function renderCalBody(container) {
   container.innerHTML = '';
   const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-  // Update label
   const mLabel = $('page-agenda').querySelector('.cal-month-label');
   if (mLabel) mLabel.textContent = APP.calView === 'monthly' ? `${monthNames[APP.calDate.getMonth()]} ${APP.calDate.getFullYear()}` : `Semaine du ${formatDate(getWeekStart())}`;
 
@@ -171,11 +171,11 @@ function renderWeekly(container) {
   container.appendChild(wrap);
 }
 
-// ── Appointment Modal ──
-function openAppointmentModal(appt = null, patientId = null, time = null) {
+export async function openAppointmentModal(appt = null, patientId = null, time = null) {
   const modal = $('modal-appointment');
   const isEdit = !!appt;
   const defaultDate = APP.calDate ? `${APP.calDate.getFullYear()}-${String(APP.calDate.getMonth() + 1).padStart(2, '0')}-${String(APP.calDate.getDate()).padStart(2, '0')}` : todayStr();
+  const { PATIENTS } = await import('./data.js');
   modal.innerHTML = `
   <div class="modal modal-md">
     <div class="modal-header">
@@ -221,7 +221,7 @@ function openAppointmentModal(appt = null, patientId = null, time = null) {
   modal.classList.add('open');
 }
 
-function saveAppointment(id) {
+export function saveAppointment(id) {
   const pid = parseInt($('appt-patient').value);
   if (!pid) { toast('Veuillez sélectionner un patient', 'error'); return; }
   const apptData = {
@@ -229,13 +229,30 @@ function saveAppointment(id) {
     type: $('appt-type').value, duration: parseInt($('appt-duration').value),
     status: $('appt-status').value, notes: $('appt-notes').value, dentiste: 'Dr. Benali',
   };
-  if (id) { const a = APPOINTMENTS.find(x => x.id === id); if (a) Object.assign(a, apptData); toast('Rendez-vous modifié', 'success'); }
-  else { APPOINTMENTS.push({ id: APPOINTMENTS.length + 1, ...apptData }); toast('Rendez-vous créé', 'success'); }
-  closeModal('modal-appointment'); renderAgenda(); renderDashboard();
+  if (id) {
+    const a = APPOINTMENTS.find(x => x.id === id);
+    if (a) Object.assign(a, apptData);
+    toast('Rendez-vous modifié', 'success');
+  } else {
+    APPOINTMENTS.push({ id: APPOINTMENTS.length + 1, ...apptData });
+    toast('Rendez-vous créé', 'success');
+  }
+  closeModal('modal-appointment');
+  renderAgenda();
+  renderDashboard();
 }
 
-function deleteAppointment(id) {
+export function deleteAppointment(id) {
   const idx = APPOINTMENTS.findIndex(a => a.id === id);
   if (idx > -1) { APPOINTMENTS.splice(idx, 1); toast('Rendez-vous supprimé', 'info'); }
-  closeModal('modal-appointment'); renderAgenda(); renderDashboard();
+  closeModal('modal-appointment');
+  renderAgenda();
+  renderDashboard();
 }
+
+// Global exposure
+window.setCalView = setCalView;
+window.calNavigate = calNavigate;
+window.openAppointmentModal = openAppointmentModal;
+window.saveAppointment = saveAppointment;
+window.deleteAppointment = deleteAppointment;

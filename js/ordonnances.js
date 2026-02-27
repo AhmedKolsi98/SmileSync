@@ -1,8 +1,9 @@
-// ══════════════════════════════════════════════════════════
-// ORDONNANCES (Prescriptions)
-// ══════════════════════════════════════════════════════════
+// Ordonnances Module
+import { APP } from './config.js';
+import { PATIENTS, ORDONNANCES } from './data.js';
+import { $, el, getPatient, avatarColor, initials, todayStr, toast, closeModal } from './utils.js';
 
-function renderOrdonnances() {
+export function renderOrdonnances() {
   if (APP.role !== 'dentiste') {
     const container = $('page-ordonnances');
     container.innerHTML = '<div class="empty-state" style="padding:60px 20px;"><div class="empty-state-icon">🔒</div><h3>Accès restreint</h3><p style="margin-top:6px;">Les ordonnances sont réservées au dentiste</p></div>';
@@ -15,7 +16,6 @@ function renderOrdonnances() {
   <button class="btn btn-accent" onclick="openOrdonnanceModal()">+ Nouvelle ordonnance</button>`;
   container.appendChild(hdr);
 
-  // Search
   const search = el('div', 'search-bar');
   search.innerHTML = `<span style="color:var(--text3);font-size:14px;">⌕</span><input placeholder="Rechercher par patient...">`;
   container.appendChild(search);
@@ -49,7 +49,7 @@ function renderOrdonnances() {
   container.appendChild(grid);
 }
 
-function openOrdonnanceModal(patientId = null) {
+export function openOrdonnanceModal(patientId = null) {
   if (APP.role !== 'dentiste') { toast('Accès réservé au dentiste', 'error'); return; }
   const modal = $('modal-ordonnance');
   modal.innerHTML = `
@@ -80,7 +80,7 @@ function openOrdonnanceModal(patientId = null) {
   addDrugRow();
 }
 
-function addDrugRow() {
+export function addDrugRow() {
   const list = $('drugs-list');
   const row = document.createElement('div'); row.className = 'drug-row';
   row.innerHTML = `
@@ -91,7 +91,7 @@ function addDrugRow() {
   list.appendChild(row);
 }
 
-function saveOrdonnance() {
+export function saveOrdonnance() {
   const pid = parseInt($('ord-patient').value);
   if (!pid) { toast('Veuillez sélectionner un patient', 'error'); return; }
   const meds = [...document.querySelectorAll('.drug-row')].map(r => ({
@@ -109,7 +109,7 @@ function saveOrdonnance() {
   setTimeout(() => printOrdonnance(newOrd.id), 300);
 }
 
-function openOrdDetail(id) {
+export function openOrdDetail(id) {
   const o = ORDONNANCES.find(x => x.id === id); if (!o) return;
   const p = getPatient(o.patientId);
   const modal = $('modal-ordonnance');
@@ -138,7 +138,7 @@ function openOrdDetail(id) {
   modal.classList.add('open');
 }
 
-function printOrdonnance(id) {
+export function printOrdonnance(id) {
   const o = ORDONNANCES.find(x => x.id === id); if (!o) return;
   const p = getPatient(o.patientId);
   const modal = $('modal-print');
@@ -193,3 +193,10 @@ function printOrdonnance(id) {
   </div>`;
   modal.classList.add('open');
 }
+
+// Global exposure
+window.openOrdonnanceModal = openOrdonnanceModal;
+window.addDrugRow = addDrugRow;
+window.saveOrdonnance = saveOrdonnance;
+window.openOrdDetail = openOrdDetail;
+window.printOrdonnance = printOrdonnance;

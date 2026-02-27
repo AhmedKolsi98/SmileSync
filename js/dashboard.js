@@ -1,24 +1,24 @@
-// ══════════════════════════════════════════════════════════
-// DASHBOARD
-// ══════════════════════════════════════════════════════════
+// Dashboard Module
+import { APP, TYPE_LABELS, TYPE_CLASSES, STATUS_LABELS_RDV, STATUS_COLORS_RDV } from './config.js';
+import { PATIENTS, APPOINTMENTS, ORDONNANCES } from './data.js';
+import { $, el, getPatient,todayStr } from './utils.js';
+import { openAppointmentModal } from './agenda.js';
 
-function renderDashboard() {
+export function renderDashboard() {
   const todayAppts = APPOINTMENTS.filter(a => a.date === todayStr());
   const thisMonthAppts = APPOINTMENTS.filter(a => a.date.startsWith('2025-06'));
   const container = $('page-dashboard');
   container.innerHTML = '';
 
-  // Header
   const hdr = el('div', 'page-header');
   hdr.innerHTML = `<div><div class="page-header-title">Bonjour, ${APP.user} 👋</div><div class="page-header-sub">Mercredi 18 juin 2025 — ${todayAppts.length} rendez-vous aujourd'hui</div></div>
   <button class="btn btn-accent" onclick="openAppointmentModal()">+ Nouveau RDV</button>`;
   container.appendChild(hdr);
 
-  // KPIs
   const kgrid = el('div', 'kpi-grid');
   const kpis = [
     { val: PATIENTS.length, label: 'Patients total', color: 'var(--accent)', pct: 100, trend: '+2 ce mois' },
-    { val: todayAppts.length, label: "RDV aujourd'hui", color: 'var(--cyan)', pct: (todayAppts.length / 8) * 100, trend: `${todayAppts.filter(a => a.status === 'confirmed').length} confirmados` },
+    { val: todayAppts.length, label: "RDV aujourd'hui", color: 'var(--cyan)', pct: (todayAppts.length / 8) * 100, trend: `${todayAppts.filter(a => a.status === 'confirmed').length} confirmés` },
     { val: thisMonthAppts.length, label: 'RDV ce mois', color: 'var(--purple)', pct: 70, trend: '↑ 12% vs mois dernier' },
     { val: ORDONNANCES.length, label: 'Ordonnances', color: 'var(--warn)', pct: 40, trend: 'Ce mois' },
   ];
@@ -30,10 +30,8 @@ function renderDashboard() {
   });
   container.appendChild(kgrid);
 
-  // Main dashboard grid
   const grid = el('div', 'dashboard-grid');
 
-  // Agenda du jour
   const agCard = el('div', 'card');
   agCard.innerHTML = `<div class="card-title"><div class="card-title-dot"></div>Agenda du jour <span style="color:var(--text3);font-weight:400;font-size:11px;margin-left:4px;">${todayAppts.length} RDV</span></div>`;
   const agList = el('div', 'agenda-list');
@@ -43,7 +41,6 @@ function renderDashboard() {
     todayAppts.sort((a, b) => a.time.localeCompare(b.time)).forEach(appt => {
       const p = getPatient(appt.patientId);
       if (!p) return;
-      const tc = TYPE_CLASSES[appt.type] || '';
       const item = el('div', 'agenda-item');
       item.innerHTML = `
         <div class="agenda-dot" style="background:var(--${appt.type === 'checkup' ? 'accent' : appt.type === 'caries' ? 'danger' : appt.type === 'detartrage' ? 'cyan' : appt.type === 'extraction' ? 'warn' : appt.type === 'implant' ? 'info' : appt.type === 'orthodontie' ? 'purple' : 'pink'})"></div>
@@ -59,11 +56,9 @@ function renderDashboard() {
   }
   agCard.appendChild(agList);
 
-  // Right column
   const rightCol = el('div', '');
   rightCol.style.cssText = 'display:flex;flex-direction:column;gap:14px;';
 
-  // Alertes
   const alertCard = el('div', 'card-sm');
   alertCard.innerHTML = `<div class="card-title"><div class="card-title-dot" style="background:var(--danger);box-shadow:0 0 6px var(--danger);"></div>Alertes médicales</div>`;
   const alertList = el('div', 'alert-list');
@@ -75,13 +70,13 @@ function renderDashboard() {
   ];
   alerts.forEach(a => {
     const item = el('div', 'alert-item');
-    item.style.background = a.color; item.style.borderRadius = 'var(--r1)';
+    item.style.background = a.color;
+    item.style.borderRadius = 'var(--r1)';
     item.innerHTML = `<span class="alert-icon">${a.icon}</span><div><div style="font-size:11px;font-weight:500;color:var(--text)">${a.title}</div><div style="font-size:10px;color:var(--text3)">${a.sub}</div></div>`;
     alertList.appendChild(item);
   });
   alertCard.appendChild(alertList);
 
-  // Quick stats
   const statsCard = el('div', 'card-sm');
   statsCard.innerHTML = `<div class="card-title"><div class="card-title-dot" style="background:var(--cyan);box-shadow:0 0 6px var(--cyan);"></div>Répartition RDV</div>`;
   const types = Object.entries(TYPE_LABELS);

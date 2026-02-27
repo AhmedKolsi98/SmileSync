@@ -1,27 +1,47 @@
-// ══════════════════════════════════════════════════════════
-// DENTAL CHART ENGINE
-// ══════════════════════════════════════════════════════════
+// Dental Chart Module
+import { TOOTH_SC, TOOTH_SL, TOOTH_SB, TOOTH_NAMES, upper, lower } from './config.js';
+import { PARO_DATA } from './data.js';
+import { getPatient, gtt, gtd, tpath, svgE, el, probeColor, showTip, moveTip, hideTip, toast } from './utils.js';
 
-function initParoForPatient(pid, teeth) {
-  PARO_DATA[pid] = {};
-  function rp(base) { return [0, 1, 2].map(() => Math.max(1, Math.min(9, base + Math.round((Math.random() - .5) * 2.5)))); }
-  [...upper, ...lower].forEach(n => {
-    const st = teeth[n] || 'healthy', abs = st === 'absent', car = st === 'caries', b = car ? 5 : 2;
-    PARO_DATA[pid][n] = {
-      buccal: abs ? [0, 0, 0] : rp(b), palatal: abs ? [0, 0, 0] : rp(b),
-      bop_buccal: abs ? [false, false, false] : [Math.random() > .7, Math.random() > .78, Math.random() > .75],
-      bop_palatal: abs ? [false, false, false] : [Math.random() > .72, Math.random() > .82, Math.random() > .8],
-      recession: abs ? [0, 0, 0] : [Math.round(Math.random() * 2), Math.round(Math.random() * 1.5), Math.round(Math.random() * 2)],
-      mobility: abs ? 0 : car ? 1 : 0,
-    };
-  });
+const chartFaceBuilt = {}, chartParoBuilt = {};
+
+export function renderDentalChartHTML(patientId, teeth) {
+  return `<div style="margin-top:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;"><div class="card-title-dot"></div>Chart Dentaire</div>
+      <div class="chart-actions-bar">
+        <button class="chip active" onclick="switchChartView('2d',this,'${patientId}')">Vue 2D</button>
+        <button class="chip" onclick="switchChartView('face',this,'${patientId}')">Vue Face</button>
+        <button class="chip" onclick="switchChartView('paro',this,'${patientId}')">Paro</button>
+      </div>
+    </div>
+    <div id="cv-2d-${patientId}" class="view-container active">
+      <div class="dental-chart-wrapper">
+        <div class="arcade-label">MÂCHOIRE SUPÉRIEURE</div>
+        <svg id="dsvg-${patientId}" viewBox="0 0 720 200" style="width:100%;max-width:720px;" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="jaw-divider"><div class="jaw-line"></div><div class="jaw-label">Mâchoire sup. / inf.</div><div class="jaw-line"></div></div>
+        <div class="arcade-label inferior">MÂCHOIRE INFÉRIEURE</div>
+      </div>
+      <div class="chart-legend">
+        ${Object.entries(TOOTH_SL).map(([k, v]) => `<div class="legend-item"><div class="legend-dot" style="background:${TOOTH_SC[k]};"></div>${v}</div>`).join('')}
+      </div>
+    </div>
+    <div id="cv-face-${patientId}" class="view-container">
+      <svg id="fsvg-${patientId}" viewBox="0 0 700 300" style="width:100%;max-width:700px;" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div id="cv-paro-${patientId}" class="view-container">
+      <div class="paro-container"><div id="paro-${patientId}"></div></div>
+    </div>
+  </div>`;
 }
 
-function initDentalChart(pid, teeth) {
+export function initDentalChart(pid, teeth) {
   const svg = document.getElementById(`dsvg-${pid}`);
   if (!svg || svg.dataset.built) return;
   svg.dataset.built = '1';
-  const defaultTeeth = {};[...upper, ...lower].forEach(n => defaultTeeth[n] = 'healthy'); const allTeeth = { ...defaultTeeth, ...teeth };
+  const defaultTeeth = {};
+  [...upper, ...lower].forEach(n => defaultTeeth[n] = 'healthy');
+  const allTeeth = { ...defaultTeeth, ...teeth };
 
   function renderArc(arr, yC, isLow) {
     const sX = 10, tS = 700 / 16;
@@ -47,8 +67,7 @@ function initDentalChart(pid, teeth) {
   renderArc(lower, 148, true);
 }
 
-function switchChartView(v, btn, pid) {
-  // Find the parent that contains our view-containers
+export function switchChartView(v, btn, pid) {
   const tcContent = btn.closest('[id^="tc-"]') || btn.closest('.tab-content');
   const container = tcContent || btn.closest('.card');
   if (!container) return;
@@ -65,12 +84,11 @@ function switchChartView(v, btn, pid) {
   if (v === 'paro' && !chartParoBuilt[pid]) { chartParoBuilt[pid] = true; buildParoView(pid); }
 }
 
-// ── Tooth Modal ──
-function openToothModal(pid, num, teeth) {
+export function openToothModal(pid, num, teeth) {
   const p = getPatient(pid);
   const st = teeth[num] || 'healthy';
   const sb = TOOTH_SB[st];
-  const modal = $('modal-tooth');
+  const modal = document.getElementById('modal-tooth');
   modal.innerHTML = `
   <div class="modal modal-md">
     <div class="modal-header">
@@ -110,13 +128,11 @@ function openToothModal(pid, num, teeth) {
   modal.classList.add('open');
 }
 
-function setToothStatus(pid, num, btn, status) {
+export function setToothStatus(pid, num, btn, status) {
   const p = getPatient(pid); if (!p) return;
   p.teeth[num] = status;
-  // Update SVG
   const tf = document.getElementById(`tf-${pid}-${num}`);
   if (tf) { tf.style.transition = 'fill 0.2s'; tf.setAttribute('fill', TOOTH_SC[status]); }
-  // Update UI in modal
   btn.closest('.tooth-status-grid').querySelectorAll('.tooth-status-btn').forEach(b => {
     b.classList.remove('selected');
     b.style.cssText = `color:${TOOTH_SC[b.querySelector('div').style.background]}`;
@@ -126,9 +142,8 @@ function setToothStatus(pid, num, btn, status) {
   toast(`Dent ${num}: ${TOOTH_SL[status]}`, 'success');
 }
 
-function saveToothData(pid, num) { toast(`Dent ${num} enregistrée`, 'success'); }
+export function saveToothData(pid, num) { toast(`Dent ${num} enregistrée`, 'success'); }
 
-// ── Face View ──
 function buildFaceView(pid) {
   const p = getPatient(parseInt(pid)); if (!p) return;
   const teeth = p.teeth;
@@ -183,7 +198,6 @@ function buildFaceView(pid) {
   fs.appendChild(svgE('line', { x1: '100', y1: '236', x2: '500', y2: '236', stroke: '#252a38', 'stroke-width': '0.5' }));
 }
 
-// ── Paro View ──
 function buildParoView(pid) {
   const p = getPatient(parseInt(pid)); if (!p) return;
   if (!PARO_DATA[pid]) initParoForPatient(parseInt(pid), p.teeth);
@@ -215,7 +229,6 @@ function buildParoArcade(pid, teeth, isLow, container, allT) {
   row(`BOP ${palLbl}`, teeth.map(n => makeBopCell(pid, n, 'palatal', allT)));
   row('RÉCESSION', teeth.map(n => makeRecCell(pid, n, allT)));
   row(`SONDAGE ${palLbl}`, teeth.map(n => makeProbeCell(pid, n, 'palatal', allT)), '1px');
-  // Graph
   const gr = document.createElement('div'); gr.style.cssText = gs + 'margin:2px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2px 0;';
   const gl = document.createElement('div'); gl.className = 'paro-row-label'; gl.style.fontSize = '8px'; gl.textContent = 'GRAPH'; gr.appendChild(gl);
   teeth.forEach(n => {
@@ -243,12 +256,14 @@ function makeBopCell(pid, n, side, allT) {
     c.appendChild(d);
   }); return c;
 }
+
 function makeRecCell(pid, n, allT) {
   const c = document.createElement('div'); c.className = 'recession-cell';
   if (allT[n] === 'absent') { c.innerHTML = '<span style="color:#3a3f52;font-size:9px">—</span>'; return c; }
   const pd = PARO_DATA[pid]?.[n]; if (!pd) return c;
   pd.recession.forEach(v => { const d = document.createElement('div'); d.className = 'recession-val'; d.textContent = v; c.appendChild(d); }); return c;
 }
+
 function makeProbeCell(pid, n, side, allT) {
   const c = document.createElement('div'); c.className = 'paro-probe-cell';
   if (allT[n] === 'absent') { c.innerHTML = '<span style="color:#3a3f52;font-size:9px">—</span>'; return c; }
@@ -267,6 +282,7 @@ function makeProbeCell(pid, n, side, allT) {
     c.appendChild(d);
   }); return c;
 }
+
 function makeMobCell(pid, n, allT) {
   const c = document.createElement('div'); c.className = 'mobility-cell';
   if (allT[n] === 'absent') { c.innerHTML = '<span style="color:#3a3f52;font-size:9px">—</span>'; return c; }
@@ -276,6 +292,7 @@ function makeMobCell(pid, n, allT) {
   sel.onchange = e => { if (PARO_DATA[pid]?.[n]) PARO_DATA[pid][n].mobility = parseInt(e.target.value); };
   c.appendChild(sel); return c;
 }
+
 function updateParoSum(pid) {
   const s = document.getElementById(`psum-${pid}`); if (!s) return;
   let total = 0, bop = 0, deep = 0, mx = 0;
@@ -291,3 +308,24 @@ function updateParoSum(pid) {
   const dc = deep < 5 ? 'var(--accent)' : deep < 15 ? 'var(--warn)' : 'var(--danger)';
   s.innerHTML = `<div class="paro-sum-item"><div class="paro-sum-val" style="color:var(--accent)">${total}</div><div class="paro-sum-label">SITES</div></div><div class="paro-sum-item"><div class="paro-sum-val" style="color:${bc}">${bopPct}%</div><div class="paro-sum-label">BOP</div></div><div class="paro-sum-item"><div class="paro-sum-val" style="color:${dc}">${deep}</div><div class="paro-sum-label">POCHES ≥4mm</div></div><div class="paro-sum-item"><div class="paro-sum-val" style="color:var(--danger)">${mx}mm</div><div class="paro-sum-label">MAX</div></div>`;
 }
+
+function initParoForPatient(pid, teeth) {
+  PARO_DATA[pid] = {};
+  function rp(base) { return [0, 1, 2].map(() => Math.max(1, Math.min(9, base + Math.round((Math.random() - .5) * 2.5)))); }
+  [...upper, ...lower].forEach(n => {
+    const st = teeth[n] || 'healthy', abs = st === 'absent', car = st === 'caries', b = car ? 5 : 2;
+    PARO_DATA[pid][n] = {
+      buccal: abs ? [0, 0, 0] : rp(b), palatal: abs ? [0, 0, 0] : rp(b),
+      bop_buccal: abs ? [false, false, false] : [Math.random() > .7, Math.random() > .78, Math.random() > .75],
+      bop_palatal: abs ? [false, false, false] : [Math.random() > .72, Math.random() > .82, Math.random() > .8],
+      recession: abs ? [0, 0, 0] : [Math.round(Math.random() * 2), Math.round(Math.random() * 1.5), Math.round(Math.random() * 2)],
+      mobility: abs ? 0 : car ? 1 : 0,
+    };
+  });
+}
+
+// Global exposure for inline handlers
+window.switchChartView = switchChartView;
+window.openToothModal = openToothModal;
+window.setToothStatus = setToothStatus;
+window.saveToothData = saveToothData;

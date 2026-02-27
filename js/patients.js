@@ -1,8 +1,10 @@
-// ══════════════════════════════════════════════════════════
-// PATIENTS
-// ══════════════════════════════════════════════════════════
+// Patients Module
+import { APP, TYPE_LABELS, STATUS_LABELS_RDV, STATUS_COLORS_RDV, upper, lower } from './config.js';
+import { PATIENTS, APPOINTMENTS, ORDONNANCES, TREATMENTS, PARO_DATA } from './data.js';
+import { $, el, getPatient, avatarColor, initials, formatDate, todayStr, toast, closeModal } from './utils.js';
+import { renderDentalChartHTML, initDentalChart } from './dental.js';
 
-function renderPatients(filter = '') {
+export function renderPatients(filter = '') {
   const container = $('page-patients');
   container.innerHTML = '';
 
@@ -12,10 +14,9 @@ function renderPatients(filter = '') {
   container.appendChild(hdr);
 
   const search = el('div', 'search-bar');
-  search.innerHTML = `<span style="color:var(--text3);font-size:14px;">⌕</span><input placeholder="Rechercher par nom, téléphone..." id="patient-search-input" value="${filter}" oninput="renderPatients(this.value)">`;
+  search.innerHTML = `<span style="color:var(--text3);font-size:14px;">⌕</span><input placeholder="Rechercher par nom, téléphone..." id="patient-search-input" value="${filter}" oninput="window.renderPatientsWithFilter(this.value)">`;
   container.appendChild(search);
 
-  // Filters
   const filters = el('div', '');
   filters.style.cssText = 'display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;';
   ['Tous', 'Avec allergies', 'RDV aujourd\'hui', 'Récents'].forEach((f, i) => {
@@ -64,14 +65,12 @@ function renderPatients(filter = '') {
   container.appendChild(grid);
 }
 
-// ── Patient Detail Modal ──
-function openPatientDetail(patientId) {
+export function openPatientDetail(patientId) {
   const p = getPatient(patientId);
   if (!p) return;
   const ac = avatarColor(p.nom);
   const modal = $('modal-patient-detail');
 
-  // Init paro data for patient if not done
   if (!PARO_DATA[patientId]) {
     initParoForPatient(patientId, p.teeth);
   }
@@ -115,7 +114,6 @@ function openPatientDetail(patientId) {
 
   modal.classList.add('open');
 
-  // Tab switching
   modal.querySelectorAll('.tab').forEach(t => {
     t.addEventListener('click', () => {
       modal.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -153,37 +151,7 @@ function renderAntecedents(p) {
     ${p.notes ? `<div class="antecedent-card" style="background:rgba(255,184,48,.06);border-color:rgba(255,184,48,.2);">
       <div class="ant-label">📝 Notes cliniques</div>
       <div style="font-size:11px;color:var(--warn);line-height:1.6;">${p.notes}</div>
-    </div>`: ''}
-  </div>`;
-}
-
-function renderDentalChartHTML(patientId, teeth) {
-  return `<div style="margin-top:12px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;"><div class="card-title-dot"></div>Chart Dentaire</div>
-      <div class="chart-actions-bar">
-        <button class="chip active" onclick="switchChartView('2d',this,'${patientId}')">Vue 2D</button>
-        <button class="chip" onclick="switchChartView('face',this,'${patientId}')">Vue Face</button>
-        <button class="chip" onclick="switchChartView('paro',this,'${patientId}')">Paro</button>
-      </div>
-    </div>
-    <div id="cv-2d-${patientId}" class="view-container active">
-      <div class="dental-chart-wrapper">
-        <div class="arcade-label">MÂCHOIRE SUPÉRIEURE</div>
-        <svg id="dsvg-${patientId}" viewBox="0 0 720 200" style="width:100%;max-width:720px;" xmlns="http://www.w3.org/2000/svg"></svg>
-        <div class="jaw-divider"><div class="jaw-line"></div><div class="jaw-label">Mâchoire sup. / inf.</div><div class="jaw-line"></div></div>
-        <div class="arcade-label inferior">MÂCHOIRE INFÉRIEURE</div>
-      </div>
-      <div class="chart-legend">
-        ${Object.entries(TOOTH_SL).map(([k, v]) => `<div class="legend-item"><div class="legend-dot" style="background:${TOOTH_SC[k]};"></div>${v}</div>`).join('')}
-      </div>
-    </div>
-    <div id="cv-face-${patientId}" class="view-container">
-      <svg id="fsvg-${patientId}" viewBox="0 0 700 300" style="width:100%;max-width:700px;" xmlns="http://www.w3.org/2000/svg"></svg>
-    </div>
-    <div id="cv-paro-${patientId}" class="view-container">
-      <div class="paro-container"><div id="paro-${patientId}"></div></div>
-    </div>
+    </div>` : ''}
   </div>`;
 }
 
@@ -214,7 +182,7 @@ function renderPatientRDV(patientId) {
     <button class="btn btn-accent btn-sm" onclick="openAppointmentModal(null,${patientId})">+ Nouveau RDV</button>
   </div>
   ${appts.map(a => `
-  <div class="agenda-item" style="margin-bottom:6px;" onclick="openAppointmentModal(${JSON.stringify(a).replace(/"/g, '"')})">
+  <div class="agenda-item" style="margin-bottom:6px;" onclick="openAppointmentModal(${JSON.stringify(a).replace(/"/g, '&quot;')})">
     <div class="agenda-dot" style="background:var(--accent)"></div>
     <div class="agenda-time">${formatDate(a.date)} ${a.time}</div>
     <div class="agenda-info"><div class="agenda-patient">${TYPE_LABELS[a.type]}</div><div class="agenda-type">${a.duration}min · ${a.notes || '—'}</div></div>
@@ -240,7 +208,7 @@ function renderPatientOrd(patientId) {
   </div>`;
 }
 
-function openPatientForm(patientId = null) {
+export function openPatientForm(patientId = null) {
   const p = patientId ? getPatient(patientId) : null;
   const modal = $('modal-patient-form');
   modal.innerHTML = `
@@ -273,7 +241,7 @@ function openPatientForm(patientId = null) {
   modal.classList.add('open');
 }
 
-function savePatient(id) {
+export function savePatient(id) {
   const prenom = $('pf-prenom').value.trim();
   const nom = $('pf-nom').value.trim();
   if (!prenom || !nom) { toast('Prénom et nom requis', 'error'); return; }
@@ -295,9 +263,31 @@ function savePatient(id) {
       antecedents: { med: $('pf-antmed').value.split(',').map(s => s.trim()).filter(Boolean), chir: [], allergies: $('pf-allergies').value.split(',').map(s => s.trim()).filter(Boolean), anesthesie: '' }
     };
     PATIENTS.push(newP);
-    $('nb-patients').textContent = PATIENTS.length;
+    document.getElementById('nb-patients').textContent = PATIENTS.length;
     toast('Patient créé', 'success');
   }
   closeModal('modal-patient-form');
   renderPatients();
 }
+
+function initParoForPatient(pid, teeth) {
+  PARO_DATA[pid] = {};
+  function rp(base) { return [0, 1, 2].map(() => Math.max(1, Math.min(9, base + Math.round((Math.random() - .5) * 2.5)))); }
+  const toothNumbers = [...upper, ...lower];
+  toothNumbers.forEach(n => {
+    const st = teeth[n] || 'healthy', abs = st === 'absent', car = st === 'caries', b = car ? 5 : 2;
+    PARO_DATA[pid][n] = {
+      buccal: abs ? [0, 0, 0] : rp(b), palatal: abs ? [0, 0, 0] : rp(b),
+      bop_buccal: abs ? [false, false, false] : [Math.random() > .7, Math.random() > .78, Math.random() > .75],
+      bop_palatal: abs ? [false, false, false] : [Math.random() > .72, Math.random() > .82, Math.random() > .8],
+      recession: abs ? [0, 0, 0] : [Math.round(Math.random() * 2), Math.round(Math.random() * 1.5), Math.round(Math.random() * 2)],
+      mobility: abs ? 0 : car ? 1 : 0,
+    };
+  });
+}
+
+// Make functions available globally for inline onclick handlers
+window.openPatientForm = openPatientForm;
+window.savePatient = savePatient;
+window.openPatientDetail = openPatientDetail;
+window.renderPatientsWithFilter = renderPatients;

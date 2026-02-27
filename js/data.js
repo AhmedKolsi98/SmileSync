@@ -1,20 +1,5 @@
-// ══════════════════════════════════════════════════════════
-// GLOBAL STATE & DATA
-// ══════════════════════════════════════════════════════════
-
-// App global state
-const APP = {
-  role: 'dentiste',
-  user: 'Dr. Ben Abdallah Rebai',
-  today: new Date(2025, 5, 18), // June 18 2025
-  currentPage: 'dashboard',
-  calView: 'monthly',
-  calDate: new Date(2025, 5, 1),
-  sidebarCollapsed: false,
-};
-
-// Patients data
-const PATIENTS = [
+// Data Storage - SmileSync
+export const PATIENTS = [
   {
     id: 1, nom: 'Jalel', prenom: 'Derbel', dob: '12/04/1987', tel: '22 345 678', email: 'jalel.derbel@gmail.com', sexe: 'M', groupe: 'A+',
     antecedents: { med: ['Hypertension', 'Diabète type 2'], chir: ['Appendicectomie 2015'], allergies: ['Amoxicilline', 'Latex'], anesthesie: 'Nécessite dosage réduit' },
@@ -65,8 +50,7 @@ const PATIENTS = [
   },
 ];
 
-// Appointments data
-const APPOINTMENTS = [
+export const APPOINTMENTS = [
   { id: 1, patientId: 1, date: '2025-06-18', time: '08:30', duration: 60, type: 'checkup', status: 'confirmed', notes: 'Bilan annuel', dentiste: 'Dr. Benali' },
   { id: 2, patientId: 2, date: '2025-06-18', time: '09:45', duration: 45, type: 'caries', status: 'confirmed', notes: 'Soins dent 15', dentiste: 'Dr. Benali' },
   { id: 3, patientId: 3, date: '2025-06-18', time: '11:00', duration: 30, type: 'detartrage', status: 'confirmed', notes: '', dentiste: 'Dr. Benali' },
@@ -84,8 +68,7 @@ const APPOINTMENTS = [
   { id: 15, patientId: 7, date: '2025-06-25', time: '15:00', duration: 45, type: 'prothese', status: 'confirmed', notes: '', dentiste: 'Dr. Benali' },
 ];
 
-// Prescriptions (Ordonnances) data
-const ORDONNANCES = [
+export const ORDONNANCES = [
   {
     id: 1, patientId: 1, date: '2025-06-01', medicaments: [
       { nom: 'Amoxicilline 1g', posologie: '1 cp matin et soir', duree: '7 jours', quantite: '14 cps' },
@@ -111,11 +94,9 @@ const ORDONNANCES = [
   },
 ];
 
-// Periodontal data (for dental chart)
-const PARO_DATA = {};
+export const PARO_DATA = {};
 
-// Treatment history
-const TREATMENTS = {
+export const TREATMENTS = {
   1: [
     { date: '2025-06-01', dent: 14, type: 'Carie', desc: 'Obturation résine composite', dentiste: 'Dr. Benali' },
     { date: '2025-03-15', dent: 16, type: 'Couronne', desc: 'Pose couronne céramique', dentiste: 'Dr. Benali' },
@@ -132,18 +113,10 @@ const TREATMENTS = {
   ],
 };
 
-// Notifications
-const NOTIFICATIONS = [
+export const NOTIFICATIONS = [
   { icon: '🦷', title: 'RDV dans 30 min', sub: 'Jalel Derbel — 08:30 — Bilan' },
   { icon: '⚠️', title: 'Allergie signalée', sub: 'Mohamed Trabelsi — Pénicilline' },
   { icon: '📋', title: 'Ordonnance expirée', sub: 'Sonia Jaber — Fluor' },
   { icon: '🗓️', title: 'RDV annulé', sub: 'Mohamed Trabelsi — Hier 10:00' },
   { icon: '💊', title: 'Rappel médicament', sub: 'Rami Chaabane — Bisphosphonates' },
 ];
-
-// Selected role for login
-let selectedRole = 'dentiste';
-
-// Chart built flags
-const chartFaceBuilt = {};
-const chartParoBuilt = {};

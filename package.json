@@ -1,0 +1,11 @@
+{
+  "name": "smilesync",
+  "version": "2.0.0",
+  "description": "SmileSync - Gestion Cabinet Dentaire",
+  "scripts": {
+    "start": "python3 -m http.server 8081",
+    "start:simple": "python3 -m http.server 8081"
+  },
+  "author": "SmileSync",
+  "license": "MIT"
+}

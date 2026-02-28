@@ -3,7 +3,7 @@ import { TOOTH_SC, TOOTH_SL, TOOTH_SB, TOOTH_NAMES, upper, lower } from './confi
 import { PARO_DATA } from './data.js';
 import { getPatient, gtt, gtd, tpath, svgE, el, probeColor, showTip, moveTip, hideTip, toast } from './utils.js';
 
-const chartFaceBuilt = {}, chartParoBuilt = {};
+const chartParoBuilt = {};
 
 export function renderDentalChartHTML(patientId, teeth) {
   return `<div style="margin-top:12px;">
@@ -11,7 +11,6 @@ export function renderDentalChartHTML(patientId, teeth) {
       <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;"><div class="card-title-dot"></div>Chart Dentaire</div>
       <div class="chart-actions-bar">
         <button class="chip active" onclick="switchChartView('2d',this,'${patientId}')">Vue 2D</button>
-        <button class="chip" onclick="switchChartView('face',this,'${patientId}')">Vue Face</button>
         <button class="chip" onclick="switchChartView('paro',this,'${patientId}')">Paro</button>
       </div>
     </div>
@@ -25,9 +24,6 @@ export function renderDentalChartHTML(patientId, teeth) {
       <div class="chart-legend">
         ${Object.entries(TOOTH_SL).map(([k, v]) => `<div class="legend-item"><div class="legend-dot" style="background:${TOOTH_SC[k]};"></div>${v}</div>`).join('')}
       </div>
-    </div>
-    <div id="cv-face-${patientId}" class="view-container">
-      <svg id="fsvg-${patientId}" viewBox="0 0 700 300" style="width:100%;max-width:700px;" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
     <div id="cv-paro-${patientId}" class="view-container">
       <div class="paro-container"><div id="paro-${patientId}"></div></div>
@@ -80,7 +76,6 @@ export function switchChartView(v, btn, pid) {
     const p = getPatient(parseInt(pid));
     if (p) setTimeout(() => initDentalChart(parseInt(pid), p.teeth), 30);
   }
-  if (v === 'face' && !chartFaceBuilt[pid]) { chartFaceBuilt[pid] = true; buildFaceView(pid); }
   if (v === 'paro' && !chartParoBuilt[pid]) { chartParoBuilt[pid] = true; buildParoView(pid); }
 }
 
@@ -143,60 +138,6 @@ export function setToothStatus(pid, num, btn, status) {
 }
 
 export function saveToothData(pid, num) { toast(`Dent ${num} enregistrée`, 'success'); }
-
-function buildFaceView(pid) {
-  const p = getPatient(parseInt(pid)); if (!p) return;
-  const teeth = p.teeth;
-  const fs = document.getElementById(`fsvg-${pid}`); if (!fs) return;
-  const allT = { ...Object.fromEntries([...upper, ...lower].map(n => [n, 'healthy'])), ...teeth };
-
-  const defs = svgE('defs', {});
-  const cu = svgE('clipPath', { id: `fcu-${pid}` }); cu.appendChild(svgE('path', { d: 'M95,145 Q220,137 350,135 Q480,137 605,145 L605,168 Q480,173 350,174 Q220,173 95,168Z' })); defs.appendChild(cu);
-  const cl = svgE('clipPath', { id: `fcl-${pid}` }); cl.appendChild(svgE('path', { d: 'M95,168 Q220,173 350,174 Q480,173 605,168 L605,190 Q480,198 350,200 Q220,198 95,190Z' })); defs.appendChild(cl);
-  fs.appendChild(defs);
-  fs.appendChild(svgE('rect', { x: '90', y: '150', width: '520', height: '46', rx: '23', fill: '#07090d' }));
-  fs.appendChild(svgE('path', { d: 'M90,162 Q160,136 280,130 Q350,127 420,130 Q540,136 610,162 Q570,152 490,148 Q420,145 350,144 Q280,145 210,148 Q130,152 90,162Z', fill: '#1c1018', stroke: '#2e1a22', 'stroke-width': '1.2' }));
-  fs.appendChild(svgE('path', { d: 'M90,162 Q160,190 280,198 Q350,202 420,198 Q540,190 610,162 Q570,176 490,184 Q420,190 350,192 Q280,190 210,184 Q130,176 90,162Z', fill: '#1a1018', stroke: '#2e1a22', 'stroke-width': '1.2' }));
-  fs.appendChild(svgE('path', { d: 'M90,162 Q220,167 350,168 Q480,167 610,162', fill: 'none', stroke: '#3d1f2b', 'stroke-width': '1.5' }));
-  fs.appendChild(svgE('path', { d: 'M95,157 Q220,149 350,147 Q480,149 605,157 Q480,154 350,152 Q220,154 95,157Z', fill: '#3d1824', 'clip-path': `url(#fcu-${pid})` }));
-  fs.appendChild(svgE('path', { d: 'M95,174 Q220,180 350,182 Q480,180 605,174 Q480,178 350,180 Q220,178 95,174Z', fill: '#1a1830', 'clip-path': `url(#fcl-${pid})` }));
-  fs.appendChild(svgE('line', { x1: '278', y1: '135', x2: '278', y2: '202', stroke: '#2e3550', 'stroke-width': '1', 'stroke-dasharray': '4,3' }));
-
-  const uF = [{ n: 15, cx: 152, cy: 158, w: 22, h: 25, v: .35 }, { n: 14, cx: 180, cy: 156, w: 24, h: 29, v: .6 }, { n: 13, cx: 210, cy: 153, w: 20, h: 33, v: .82 }, { n: 12, cx: 238, cy: 151, w: 18, h: 36, v: .93 }, { n: 11, cx: 263, cy: 150, w: 22, h: 38, v: 1 }, { n: 21, cx: 291, cy: 150, w: 22, h: 38, v: 1 }, { n: 22, cx: 317, cy: 151, w: 18, h: 36, v: .93 }, { n: 23, cx: 345, cy: 153, w: 20, h: 33, v: .82 }, { n: 24, cx: 375, cy: 155, w: 24, h: 30, v: .62 }, { n: 25, cx: 405, cy: 157, w: 22, h: 26, v: .38 }];
-  const lF = [{ n: 45, cx: 158, cy: 177, w: 20, h: 24, v: .3 }, { n: 44, cx: 185, cy: 175, w: 22, h: 27, v: .55 }, { n: 43, cx: 213, cy: 174, w: 18, h: 30, v: .78 }, { n: 42, cx: 239, cy: 173, w: 16, h: 32, v: .9 }, { n: 41, cx: 263, cy: 173, w: 18, h: 34, v: .95 }, { n: 31, cx: 289, cy: 173, w: 18, h: 34, v: .95 }, { n: 32, cx: 314, cy: 173, w: 16, h: 32, v: .9 }, { n: 33, cx: 340, cy: 174, w: 18, h: 30, v: .78 }, { n: 34, cx: 368, cy: 175, w: 22, h: 27, v: .55 }, { n: 35, cx: 396, cy: 177, w: 20, h: 24, v: .3 }];
-
-  function drawFaceTeeth(arr, clipId, isLow) {
-    const g = svgE('g', { 'clip-path': `url(#${clipId})` });
-    arr.forEach(({ n, cx, cy, w, h, v }) => {
-      const st = allT[n] || 'healthy'; const col = TOOTH_SC[st]; const op = st === 'absent' ? .1 : v;
-      const th = Math.round(h * op * .72 + 7); const ty = cy + (isLow ? 1 : -1);
-      const gg = svgE('g', { class: 'tooth-group', 'data-tooth': n, opacity: op });
-      gg.appendChild(svgE('ellipse', { cx, cy: ty + th / 2 + 2, rx: w * .36, ry: 3, fill: 'rgba(0,0,0,.35)' }));
-      const rx = w * .22;
-      const body = svgE('rect', { x: cx - w / 2 + 1, y: ty - th / 2, width: w - 2, height: th, rx, ry: rx * .8, fill: col, id: `tff-${pid}-${n}${isLow ? 'l' : ''}` });
-      gg.appendChild(body);
-      gg.appendChild(svgE('rect', { x: cx - w / 2 + 3, y: ty - th / 2 + 3, width: w * .27, height: th * .36, rx: '2', fill: 'rgba(255,255,255,.12)' }));
-      if (st === 'crown') { gg.appendChild(svgE('rect', { x: cx - w / 2, y: ty - th / 2 - 1, width: w, height: th + 2, rx: rx + 1, ry: rx * .8 + 1, fill: 'none', stroke: '#00e5ff', 'stroke-width': '1.5', opacity: '.65' })); }
-      if (st === 'caries') { gg.appendChild(svgE('circle', { cx: cx + 2, cy: ty - th / 2 + 5, r: '3', fill: '#ff4d6d', opacity: '.9' })); }
-      if (st === 'devitalized') { gg.appendChild(svgE('line', { x1: cx - 3, y1: ty - th / 2 + 4, x2: cx + 3, y2: ty - th / 2 + 10, stroke: '#9f7aea', 'stroke-width': '1.5' })); gg.appendChild(svgE('line', { x1: cx + 3, y1: ty - th / 2 + 4, x2: cx - 3, y2: ty - th / 2 + 10, stroke: '#9f7aea', 'stroke-width': '1.5' })); }
-      const lbl = svgE('text', { x: cx, y: ty + th / 2 - 3, fill: 'rgba(13,15,20,.8)', 'text-anchor': 'middle', 'font-size': '7', 'font-family': 'DM Mono,monospace', 'font-weight': '500' }); lbl.textContent = n;
-      gg.appendChild(lbl); g.appendChild(gg);
-      gg.addEventListener('mouseenter', e => showTip(e, `<strong style="color:var(--accent)">${n}</strong> ${TOOTH_NAMES[n] || ''}<br><span style="color:${TOOTH_SC[st]}">${TOOTH_SL[st]}</span>`));
-      gg.addEventListener('mousemove', moveTip); gg.addEventListener('mouseleave', hideTip);
-      gg.addEventListener('click', () => openToothModal(parseInt(pid), n, allT));
-    });
-    fs.appendChild(g);
-  }
-  drawFaceTeeth(uF, `fcu-${pid}`, false);
-  drawFaceTeeth(lF, `fcl-${pid}`, true);
-
-  function mkT(x, y, t, c = '#3a4060', s = 8) { const tx = svgE('text', { x, y, 'font-family': 'DM Mono,monospace', 'font-size': s, fill: c, 'text-anchor': 'middle' }); tx.textContent = t; fs.appendChild(tx); }
-  mkT(350, 22, 'VUE FRONTALE', '#4b5270', 9);
-  mkT(185, 230, 'Q2 — SUP. GAUCHE', '#3a4060', 7.5); mkT(415, 230, 'Q1 — SUP. DROIT', '#3a4060', 7.5);
-  mkT(185, 245, 'Q3 — INF. GAUCHE', '#3a4060', 7.5); mkT(415, 245, 'Q4 — INF. DROIT', '#3a4060', 7.5);
-  fs.appendChild(svgE('line', { x1: '278', y1: '218', x2: '278', y2: '255', stroke: '#252a38', 'stroke-width': '0.7', 'stroke-dasharray': '3,3' }));
-  fs.appendChild(svgE('line', { x1: '100', y1: '236', x2: '500', y2: '236', stroke: '#252a38', 'stroke-width': '0.5' }));
-}
 
 function buildParoView(pid) {
   const p = getPatient(parseInt(pid)); if (!p) return;
